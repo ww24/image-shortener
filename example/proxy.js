@@ -6,7 +6,7 @@
  */
 
 /* settings */
-var allow = 'http://img.ww24.jp',
+var	allow = 'http://img.ww24.jp',
 	port = 8098;
 
 var	http = require('http'),
@@ -31,14 +31,14 @@ http.createServer(function (req, res) {
 		contentLength = req.headers['content-length'],
 		cL = (typeof(contentLength) !== "undefined");
 	if (host.indexOf('.') !== -1) {
-		var path = (urlParse.pathname.slice(1) + (urlParse.search ? urlParse.search : '')).slice(host.length),
+		var	path = (urlParse.pathname.slice(1) + (urlParse.search ? urlParse.search : '')).slice(host.length),
 			reqHeaders = {
 				'Content-Length': cL ? contentLength : 0
 			},
 			isGoogle = (host === 'www.googleapis.com');
 		if (cL) reqHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
 		if (cL && isGoogle) reqHeaders['Content-Type'] = 'application/json';
-		var scheme = isGoogle ? https : http,
+		var	scheme = isGoogle ? https : http,
 			request = scheme.request({
 				host: host,
 				path: path,

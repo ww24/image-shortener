@@ -1,0 +1,19 @@
+strong {
+	color				: red;
+}
+.title {
+	text-align			: center;
+}
+#wrapper {
+	width				: 800px;
+	position			: relative;
+	margin				: 0 auto;
+}
+#form {
+	margin				: 15px 0;
+	text-align			: center;
+}
+#img {
+	max-width			: 400px;
+	max-height			: 400px;
+}

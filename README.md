@@ -18,10 +18,10 @@ generate.js: 9-12
 ##アクセスログ
 ログは下記のように記録されます。
 
-	{"type":"html","path":"\/","status":200},
-	{"type":"data","path":"\/images\/ptl_img1.gif","status":200},
-	{"type":"data","path":"\/images\/ptl_logo2.png","status":200},
-	{"type":"data","path":"\/p.tl\/c1yY","status":200},
+	{"data":"Fri, 11 Nov 2011 11:11:11 +0900","type":"html","path":"\/","status":200},
+	{"data":"Fri, 11 Nov 2011 11:11:11 +0900","type":"data","path":"\/images\/ptl_img1.gif","status":200},
+	{"data":"Fri, 11 Nov 2011 11:11:11 +0900","type":"data","path":"\/images\/ptl_logo2.png","status":200},
+	{"data":"Fri, 11 Nov 2011 11:11:11 +0900","type":"data","path":"\/p.tl\/c1yY","status":200},
 
 これは、このようにJSONとして読み込むことができます。
 

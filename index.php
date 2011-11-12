@@ -7,6 +7,7 @@
  */
 
 $log = array(
+	'data' => date(DATE_RFC1123),
 	'type' => 'html',
 	'path' => $_SERVER['PATH_INFO'],
 	'status' => 200

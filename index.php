@@ -64,6 +64,7 @@ if (isset($api) && $api !== '') {
 					<li>ウェブサイトへ貼り付け</li>
 				</ul>
 				※URLの生成はChrome, Safari, Firefoxで確認しています。(HTML5 File APIを使用します。)<br />
+				ソースコードは<a href="https://github.com/ww24/image-shortener">こちら</a>
 			</p>
 			<strong>※保存した画像は削除できませんのでご注意下さい。</strong>
 			<form action="#" id="form">

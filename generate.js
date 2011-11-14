@@ -9,7 +9,6 @@ $(function () {
 	/* settings */
 	var	proxy = "http://appcloud.info:8098/",
 		site = "http://img.ww24.jp/",
-		sep = ",",
 		api = "p.tl";
 	
 	var	data = "",
@@ -89,7 +88,7 @@ $(function () {
 				ajax(uri, function (url) {
 					split[count] = url.slice(api.length + 8);
 					if (i === ++counter) {
-						ajax(api + "/" + split.join(sep), function (url) {
+						ajax(api + "/" + split.join(","), function (url) {
 							display(url);
 						});
 					}

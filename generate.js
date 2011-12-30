@@ -1,6 +1,6 @@
 /**
  * Image-Shortener
- * v0.2.0
+ * v0.3.0
  * generate.js
  * http://img.ww24.jp/
  */
@@ -13,42 +13,75 @@ $(function () {
 	
 	var	data = "",
 		mime = "",
-		submit = true;
-	$("#file").change(function () {
-		var	file = this.files[0];
-		if (file.type.split("/")[0] === "image") {
-			var fr = new FileReader();
-			fr.onload = function () {
-				data = fr.result;
-				mime = file.type;
-				var $data = $("#data");
-				if ($data.size() > 0) {
-					$data.remove();
+		submit = true,
+		addImage = function (files) {
+			var	file = files[0];
+			if (file.type.split("/")[0] === "image") {
+				var fr = new FileReader();
+				fr.onload = function () {
+					data = fr.result;
+					mime = file.type;
+					var $data = $("#data");
+					if ($data.size() > 0) {
+						$data.remove();
+					}
+					$("#form").css({padding: 0}).append('<div id="data"><img id="img" src="'+ fr.result +'" alt="image" /><br />'+
+						'<span id="info">Source: '+ file.size +'byte, Base64: '+ data.length +'byte <span>'+
+						'<input id="submit" type="submit" value="保存" /></div>');
+					submit = false;
+					if (file.size > 1000000) alert("画像のサイズが大きすぎるため、ブラウザがクラッシュする場合があります。");
+				};
+				fr.readAsDataURL(file);
+			} else {
+				if ($("#data").size() > 0) {
+					$("#data").remove();
+					$("#form").css({padding: "120px"});
+					submit = true;
 				}
-				$("#form").append('<div id="data"><img id="img" src="'+ fr.result +'" alt="image" /><br />'+
-					'<span id="info">Source: '+ file.size +'byte, Base64: '+ data.length +'byte <span>'+
-					'<input id="submit" type="submit" value="保存" /></div>');
-				submit = false;
-				if (file.size > 1000000) alert("画像のサイズが大きすぎるため、ブラウザがクラッシュする場合があります。");
-			};
-			fr.readAsDataURL(file);
-		} else {
-			if ($("#data").size() > 0) {
-				$("#data").remove();
-				submit = true;
+				$("#file").val("");
+				alert("画像を選択して下さい");
 			}
-			$("#file").val("");
-			alert("画像を選択して下さい");
-		}
+			return false;
+		};
+	$("#file").change(function () {
+		addImage(this.files);
 	});
-	$("#form").submit(function () {
+	$("#form").bind("drop", function (e) {
+		addImage(e.originalEvent.dataTransfer.files);
+	}).bind("dragenter", function () {
+		return false;
+	}).bind("dragover", function () {
+		$(this).css({"border-color": "#4169e1"});
+		return false;
+	}).bind("dragleave", function () {
+		$(this).css({"border-color": "#6495ed"});
+		return false;
+	}).submit(function () {
 		if (submit) return false;
 		submit = true;
 		$("#submit").remove();
 		$("#info").remove();
-		var	$url = $("#data").append('Short URL :<input id="url" value="Now loading..." readonly="readonly" />').find("#url"),
+		var	$url = $("#data").append('Short URL :<input id="url" value="Now loading..." readonly="readonly" /> <a id="link" href="#">Link</a>').find("#url"),
 			size = 32510,
-			ajax = function (uri, callback) {
+			display = new function () {
+				var able = true;
+				this.alert = function (message) {
+					if (able) {
+						able = false;
+						alert(message);
+					}
+				};
+				this.show = function (uri) {
+					$("#link").css({display: "inline"}).attr({href: uri}).click(function () {
+						window.open(uri);
+						return false;
+					});
+					$url.val(uri).click(function () {
+						$(this).select();
+					});
+				};
+			}(),
+			ajax = function (site, uri, callback) {
 				$.ajax({
 					type: "post",
 					url: proxy + api,
@@ -57,20 +90,12 @@ $(function () {
 					},
 					dataType: "text",
 					error: function () {
-						alert("URL短縮中にネットワークエラーが発生しました。");
+						display.alert("URL短縮中にネットワークエラーが発生しました。");
 					},
 					success: function (result) {
 						var shortURL = $(result).find("#shorturl").attr("value");
 						callback(shortURL);
 					}
-				});
-			},
-			display = function (uri) {
-				$url.val(uri);
-				$url.focus(function () {
-					$(this).select();
-				}).click(function () {
-					$(this).select();
 				});
 			},
 			split = [],
@@ -81,19 +106,20 @@ $(function () {
 			split[i] = (data.length > size) ? data.slice(0, size) : data;
 			data = data.slice(size);
 		}
+		var short = function (i, j) {
+			var	count = j,
+				uri = split[j];
+			ajax("http://base64.test/", uri, function (url) {
+				split[count] = url.slice(api.length + 8);
+				if (i === ++counter) {
+					ajax(site, api + "/" + split.join(","), function (url) {
+						display.show(site + url.split('/').pop());
+					});
+				}
+			});
+		};
 		for (var j = 0; i > j; j++) {
-			(function () {
-				var	count = j,
-					uri = split[j];
-				ajax(uri, function (url) {
-					split[count] = url.slice(api.length + 8);
-					if (i === ++counter) {
-						ajax(api + "/" + split.join(","), function (url) {
-							display(url);
-						});
-					}
-				});
-			})();
+			short(i, j);
 		}
 		return false;
 	});

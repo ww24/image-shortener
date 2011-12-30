@@ -1,8 +1,16 @@
-strong {
-	color				: red;
+body {
+	font-family			: Helvetica, Arial, sans-serif;
+	color				: #808080;
 }
-.title {
+strong {
+	color				: #f08080;
+}
+#header {
 	text-align			: center;
+}
+#header img {
+	width				: 530px;
+	height				: 120px;
 }
 #wrapper {
 	width				: 800px;
@@ -11,9 +19,14 @@ strong {
 }
 #form {
 	margin				: 15px 0;
+	padding				: 120px;
+	border				: 5px #6495ed dashed;
 	text-align			: center;
 }
 #img {
 	max-width			: 400px;
 	max-height			: 400px;
+}
+#link {
+	display				: none;
 }

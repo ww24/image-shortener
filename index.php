@@ -1,10 +1,13 @@
 <?php
 /**
  * Image-Shortener
- * v0.2.0
+ * v0.3.0
  * index.php
  * http://img.ww24.jp/
  */
+
+// setting
+$default_api = 'p.tl';
 
 $log = array(
 	'date' => date(DATE_RFC1123),
@@ -17,7 +20,7 @@ $api = isset($path[1]) ? $path[1] : null;
 $data = isset($path[2]) ? $path[2] : null;
 if (isset($api) && $api !== '') {
 	$log['type'] = 'data';
-	if (isset($data)) {
+	function expand($api, $data) {
 		$url = explode(',', $data);
 		foreach ($url as $id => $val) {
 			$url[$id] = substr(parse_url(file_get_contents('http://ux.nu/hugeurl?url=' . $api . '/' . $val), PHP_URL_PATH), 1);
@@ -38,9 +41,14 @@ if (isset($api) && $api !== '') {
 			header('HTTP/1.1 404 Not Found');
 			$log['status'] = 404;
 		}
+	}
+	if (isset($data)) {
+		expand($api, $data);
 	} else {
-		header('HTTP/1.1 404 Not Found');
-		$log['status'] = 404;
+		$data_array = explode('/', substr(parse_url(file_get_contents('http://ux.nu/hugeurl?url=' . $default_api . '/' . $api), PHP_URL_PATH), 1));
+		$api = $data_array[0];
+		$data = $data_array[1];
+		expand($api, $data);
 	}
 } else {
 	$data = <<< EOD
@@ -53,21 +61,26 @@ if (isset($api) && $api !== '') {
 	</head>
 	<body>
 		<div id="wrapper">
-			<h1 class="title">URL短縮サービスを利用したオンラインストレージ</h1>
-			<h2 class="title">- Image Shortener -</h2>
+			<div id="header">
+				<a href="/">
+					<img src="logo.png" alt="Image Shortener - URL短縮サービスを利用したオンラインストレージ -" />
+				</a>
+			</div>
 			<p>
 				画像をBase64エンコードし、p.tlで短縮して短いURLに変換します。<br />
 				保存した画像はp.tlでURLとして保管されます。<br />
+			</p>
 				主な用途
 				<ul>
 					<li>画像の共有</li>
 					<li>ウェブサイトへ貼り付け</li>
 				</ul>
+			<p>
 				※URLの生成はChrome, Safari, Firefoxで確認しています。(HTML5 File APIを使用します。)<br />
 				ソースコードは<a href="https://github.com/ww24/image-shortener">こちら</a>
 			</p>
 			<strong>※保存した画像は削除できませんのでご注意下さい。</strong>
-			<form action="#" id="form">
+			<form id="form" action="#">
 				<input id="file" type="file" /><br />
 			</form>
 		</div>

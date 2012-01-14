@@ -37,13 +37,13 @@ $(function () {
 				$("#file").val("");
 				alert("画像を選択して下さい");
 			}
-			return false;
 		};
 	$("#file").change(function () {
 		addImage(this.files);
 	});
 	$("#form").bind("drop", function (e) {
 		addImage(e.originalEvent.dataTransfer.files);
+		return false;
 	}).bind("dragenter", function () {
 		return false;
 	}).bind("dragover", function () {

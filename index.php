@@ -1,7 +1,6 @@
 <?php
 /**
  * Image-Shortener
- * v0.3.0
  * index.php
  * http://img.ww24.jp/
  */
@@ -84,7 +83,7 @@ if (isset($api) && $api !== '') {
 				<input id="file" type="file" /><br />
 			</form>
 		</div>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 		<script type="text/javascript" src="generate.js"></script>
 	</body>
 </html>

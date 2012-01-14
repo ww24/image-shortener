@@ -1,6 +1,5 @@
 /**
  * Image-Shortener
- * v0.3.0
  * generate.js
  * http://img.ww24.jp/
  */
@@ -21,10 +20,7 @@ $(function () {
 				fr.onload = function () {
 					data = fr.result;
 					mime = file.type;
-					var $data = $("#data");
-					if ($data.size() > 0) {
-						$data.remove();
-					}
+					$("#data").remove();
 					$("#form").css({padding: 0}).append('<div id="data"><img id="img" src="'+ fr.result +'" alt="image" /><br />'+
 						'<span id="info">Source: '+ file.size +'byte, Base64: '+ data.length +'byte <span>'+
 						'<input id="submit" type="submit" value="保存" /></div>');

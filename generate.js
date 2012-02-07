@@ -6,9 +6,10 @@
 
 $(function () {
 	/* settings */
-	var	proxy = "http://appcloud.info:8098/",
+	var	proxy = "http://imgpx.cloudfoundry.com/",
 		site = "http://img.ww24.jp/",
-		api = "p.tl";
+		api = "p.tl",
+		fakeurl = "http://base64.test/";
 	
 	var	data = "",
 		mime = "",
@@ -102,20 +103,20 @@ $(function () {
 			split[i] = (data.length > size) ? data.slice(0, size) : data;
 			data = data.slice(size);
 		}
-		var short = function (i, j) {
+		var shorten = function (i, j) {
 			var	count = j,
 				uri = split[j];
-			ajax("http://base64.test/", uri, function (url) {
+			ajax(fakeurl, uri, function (url) {
 				split[count] = url.slice(api.length + 8);
 				if (i === ++counter) {
-					ajax(site, api + "/" + split.join(","), function (url) {
+					ajax(fakeurl, api + "/" + split.join(","), function (url) {
 						display.show(site + url.split('/').pop());
 					});
 				}
 			});
 		};
 		for (var j = 0; i > j; j++) {
-			short(i, j);
+			shorten(i, j);
 		}
 		return false;
 	});

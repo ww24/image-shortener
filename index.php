@@ -19,10 +19,21 @@ $api = isset($path[1]) ? $path[1] : null;
 $data = isset($path[2]) ? $path[2] : null;
 if (isset($api) && $api !== '') {
 	$log['type'] = 'data';
-	function expand($api, $data) {
+	function expand($type, $api, $data) {
 		$url = explode(',', $data);
 		foreach ($url as $id => $val) {
-			$url[$id] = substr(parse_url(file_get_contents('http://ux.nu/hugeurl?url=' . $api . '/' . $val), PHP_URL_PATH), 1);
+			if ($type) {
+				$html = file_get_contents('http://' . $api . '/' . $val);
+				$html_s = mb_strpos($html, '<title');
+				$html_e = mb_strpos($html, '</title>');
+				$title = explode('>', mb_substr($html, $html_s, $html_e - $html_s));
+				$html = explode(' ', $title[1]);
+				$exp_url = $html[0];
+			} else {
+				$exp_url = file_get_contents('http://ux.nu/hugeurl?url=' . $api . '/' . $val);
+			}
+			$url[$id] = substr(parse_url($exp_url, PHP_URL_PATH), 1);
+			
 			if ($id === 0) {
 				$val = explode(',', $url[$id]);
 				if (isset($val[0], $val[1])) {
@@ -42,12 +53,12 @@ if (isset($api) && $api !== '') {
 		}
 	}
 	if (isset($data)) {
-		expand($api, $data);
+		expand(false, $api, $data);
 	} else {
 		$data_array = explode('/', substr(parse_url(file_get_contents('http://ux.nu/hugeurl?url=' . $default_api . '/' . $api), PHP_URL_PATH), 1));
 		$api = $data_array[0];
 		$data = $data_array[1];
-		expand($api, $data);
+		expand(true, $api, $data);
 	}
 } else {
 	$data = <<< EOD

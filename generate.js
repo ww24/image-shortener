@@ -15,6 +15,10 @@ $(function () {
 		mime = "",
 		submit = true,
 		addImage = function (files) {
+			if (! (files && files[0] && FileReader)) {
+				alert("お使いのブラウザには対応していません。");
+				return false;
+			}
 			var	file = files[0];
 			if (file.type.split("/")[0] === "image") {
 				var fr = new FileReader();
@@ -39,6 +43,7 @@ $(function () {
 				alert("画像を選択して下さい");
 			}
 		};
+	
 	$("#file").change(function () {
 		addImage(this.files);
 	});

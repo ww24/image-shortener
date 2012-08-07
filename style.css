@@ -11,6 +11,7 @@ strong {
 #header img {
 	width				: 530px;
 	height				: 120px;
+	border				: none;
 }
 #wrapper {
 	width				: 800px;

@@ -5,9 +5,6 @@
  * http://img.ww24.jp/
  */
 
-// setting
-$default_api = 'p.tl';
-
 $log = array(
 	'date' => date(DATE_RFC1123),
 	'type' => 'html',
@@ -17,21 +14,44 @@ $log = array(
 $path = explode('/', $_SERVER['PATH_INFO']);
 $api = isset($path[1]) ? $path[1] : null;
 $data = isset($path[2]) ? $path[2] : null;
+
+// apiが指定されている場合は展開、そうでない場合はトップページを返す
 if (isset($api) && $api !== '') {
 	$log['type'] = 'data';
+	
+	// p.tlにより展開
+	function ptl($val) {
+		global $log;
+		
+		$html = file_get_contents('http://p.tl/' . $val);
+		if ($html !== false) {
+			$html_s = mb_strpos($html, '<title');
+			$html_e = mb_strpos($html, '</title>');
+			$title = explode('>', mb_substr($html, $html_s, $html_e - $html_s));
+			$html = explode(' ', $title[1]);
+			$exp_url = $html[0];
+			
+			$log["type"] = "cushion";
+		} else {
+			$hrh = implode("|", $http_response_header);
+			$hrh = explode("Location: ", $hrh);
+			$location = explode("|", $hrh[1]);
+			$exp_url = $location[0];
+			
+			$log["type"] = "direct";
+		}
+		
+		return $exp_url;
+	}
+	
+	// URLの展開 $type:ux.nuで展開するか否か, $api:短縮URLサービス, $data:分割された短縮URL
 	function expand($type, $api, $data) {
+		global $log;
+		
 		$url = explode(',', $data);
 		foreach ($url as $id => $val) {
-			if ($type) {
-				$html = file_get_contents('http://' . $api . '/' . $val);
-				$html_s = mb_strpos($html, '<title');
-				$html_e = mb_strpos($html, '</title>');
-				$title = explode('>', mb_substr($html, $html_s, $html_e - $html_s));
-				$html = explode(' ', $title[1]);
-				$exp_url = $html[0];
-			} else {
-				$exp_url = file_get_contents('http://ux.nu/hugeurl?url=' . $api . '/' . $val);
-			}
+			$exp_url = ptl($val);
+			
 			$url[$id] = substr(parse_url($exp_url, PHP_URL_PATH), 1);
 			
 			if ($id === 0) {
@@ -42,7 +62,8 @@ if (isset($api) && $api !== '') {
 				} else break;
 			}
 		}
-		$data = base64_decode(implode($url), true);
+		
+		$data = base64_decode(implode("", $url), true);
 		if ($data !== false && isset($mime)) {
 			header('Content-Type: ' . $mime);
 			header('Content-Length: ' . strlen($data));
@@ -55,7 +76,7 @@ if (isset($api) && $api !== '') {
 	if (isset($data)) {
 		expand(false, $api, $data);
 	} else {
-		$data_array = explode('/', substr(parse_url(file_get_contents('http://ux.nu/hugeurl?url=' . $default_api . '/' . $api), PHP_URL_PATH), 1));
+		$data_array = explode('/', substr(parse_url(ptl($api), PHP_URL_PATH), 1));
 		$api = $data_array[0];
 		$data = $data_array[1];
 		expand(true, $api, $data);

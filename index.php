@@ -5,6 +5,8 @@
  * http://img.ww24.jp/
  */
 
+error_reporting(E_ALL);
+
 $log = array(
 	'date' => date(DATE_RFC1123),
 	'type' => 'html',
@@ -23,7 +25,7 @@ if (isset($api) && $api !== '') {
 	function ptl($val) {
 		global $log;
 		
-		$html = file_get_contents('http://p.tl/' . $val);
+		$html = file_get_contents('http://p.tl/' . $val . '!');
 		if ($html !== false) {
 			$html_s = mb_strpos($html, '<title');
 			$html_e = mb_strpos($html, '</title>');
@@ -81,8 +83,7 @@ if (isset($api) && $api !== '') {
 		$data = $data_array[1];
 		expand(true, $api, $data);
 	}
-} else {
-	$data = <<< EOD
+} else echo <<< 'EOD'
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -120,8 +121,7 @@ if (isset($api) && $api !== '') {
 	</body>
 </html>
 EOD;
-	echo $data;
-}
+
 // logging
 file_put_contents('./access.log', json_encode($log) . ",\n", FILE_APPEND | LOCK_EX);
 
